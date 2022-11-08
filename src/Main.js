@@ -1,6 +1,6 @@
 import { style } from "@mui/system";
 import React from "react";
-import { useRef, useState, useMemo } from "react";
+import { useRef, useState, useMemo, useEffect } from "react";
 import { useTable } from "react-table";
 
 /** Her kommer hovedinnholdet:
@@ -10,34 +10,6 @@ import { useTable } from "react-table";
  * En knapp for last opp vedlegg - med en infoknapp om at dette kun er nødvendig hvis det er noe som kun finnes i papir-arkiv?
  * Skal vi ha en seksjon når alt er sendt inn sånn "Du har nå godkjent info av xxxxxx. Du kan nå logge ut, også med en utloggings-knapp?
  * Bør det være en timer aktivert - automatisk utlogging om du ikke har gjort noe på x antall minutter? Kobles opp mot backend? */
-
-const myPersons = [
-  //RADENE
-  {
-    name: "Jon Johnsen",
-    saksnummer: "12345",
-    personnummer: "230567xxxx",
-    dato: "120345",
-    status: "pending",
-    action: "read",
-  },
-  {
-    name: "Ida Jensen",
-    saksnummer: "12346",
-    personnummer: "260197xxxx",
-    dato: "120345",
-    status: "pending",
-    action: "read",
-  },
-  {
-    name: "Gunnar Gunnersen",
-    saksnummer: "12347",
-    personnummer: "010203xxxx",
-    dato: "120345",
-    status: "pending",
-    action: "read",
-  },
-];
 
 const COLUMNS = [
   {
@@ -68,8 +40,16 @@ const COLUMNS = [
 
 function Main() {
   const [data, setData] =
-    useState(myPersons); /* Godkjenn knappen kobles opp mot denne */
+    useState([]); /* Godkjenn knappen kobles opp mot denne */
   const columns = useMemo(() => COLUMNS, []);
+  const fetchData = async ()=>{
+    const res=await fetch("http://localhost:4000/bruker")
+    const json=await res.json()
+    setData(json.users)
+  }
+  useEffect(()=>{
+    fetchData()
+  }, []);
   //const tableInstance = useTable({ columns, data });
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
