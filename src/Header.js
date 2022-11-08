@@ -9,7 +9,10 @@ function Header() {
        *  Skal den logget inn ligge i header? Eller under, sjekk dagens løsning
        *  Styling --> Egen blåfarge som indikerer header
        *   */}
-      <p> Finansoppslag </p>
+      <p style={header_title}> Finansoppslag </p>
+      <a href="#" style={header_a}>
+        Brukernavn her
+      </a>
     </header>
   );
 }
@@ -20,13 +23,28 @@ export default Header;
 
 const header = {
   display: "flex",
-  padding: "20px 10px",
+  justifyContent: "space-between",
+  position: "absolute",
+  height: "10%",
+  width: "100%",
+  top: "0",
+  margin: "0",
+  background: "#415890",
+  color: "#fff",
+  fontSize: "2rem",
+};
+
+const header_title = {
+  marginTop: "1rem",
+  marginLeft: "auto",
+  marginRight: "auto",
 };
 
 const header_a = {
-  float: "left",
+  float: "right",
+  marginRight: "4%",
+  marginTop: "2rem",
   color: "#fff",
-  textAlign: "center",
   fontSize: "12px",
   textDecoration: "none",
 };
