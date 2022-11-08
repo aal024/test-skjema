@@ -1,19 +1,7 @@
 import logo from "./logo.svg";
 import "./App.css";
 import React from "react";
-
-const header = {
-  display: "flex",
-  padding: "20px 10px",
-};
-
-const header_a = {
-  float: "left",
-  color: "#fff",
-  textAlign: "center",
-  fontSize: "12px",
-  textDecoration: "none",
-};
+import Header from "./Header";
 
 const myCSS = {
   background: "#c1e1ec",
@@ -25,17 +13,10 @@ const myCSS = {
 function App() {
   return (
     <div className="App">
-      <header className="App-header" style={header}>
-        {/** Her kommer headeren:  background: "#6464ff"
-         * "Finansoppslag" -- eller bare oppslag hvis repoet vårt er public.
-         *  Logo -> Politiets? Eller den gule som er i dagens oppslag
-         *  Skal den logget inn ligge i header? Eller under, sjekk dagens løsning
-         *  Styling --> Egen blåfarge som indikerer header
-         *   */}
-        <p> Finansoppslag </p>
-      </header>
 
       <main>
+
+        <Header />
         <div style={myCSS}></div>
         {/** Her kommer hovedinnholdet:
          * Navn på deg selv osv hvis dette ikke er i headeren
