@@ -2,6 +2,7 @@ import { style } from "@mui/system";
 import React from "react";
 import { useRef, useState, useMemo, useEffect } from "react";
 import { useTable, useSortBy, useGlobalFilter, useFilters, usePagination } from "react-table";
+import EditCase from "./EditCase";
 
 /** Her kommer hovedinnholdet:
  * Navn på deg selv osv hvis dette ikke er i headeren
@@ -36,6 +37,10 @@ const COLUMNS = [
     Header: "Action",
     accessor: "action",
   },
+  {
+    Header: "Rediger",
+    accessor: "rediger",
+  }
 ];
 
 function Main() {
@@ -63,6 +68,22 @@ function Main() {
       useGlobalFilter,
       useSortBy,
       usePagination );
+
+    const updateState = async (message) => {
+      var svar = await fetch("http://localhost:4000/approve", {
+        method: "POST", body: JSON.stringify({message}),
+        headers: {"Content-Type": "application/json", "Accept": "application/json"}
+      });
+      const json=await svar.json()
+      const sak= data.find((s) => { return s.saksnummer === message})
+      sak.status = json.status
+      setData([...data])
+      console.log("test" + new Date(), json);
+    }
+
+    const editCase = (snummer) => {
+      <EditCase />
+    }
 
   return (
     <div>
@@ -95,17 +116,45 @@ function Main() {
               return (
                 <tr {...row.getRowProps()}>
                   {row.cells.map((cell) => {
-                    return (
-                      <td
+                    ///
+                    if(cell.column.Header ==="Action") {
+                      return(
+                        <td
                         style={{
                           padding: "1rem",
                           borderRight: "1px solid black",
                         }}
                         {...cell.getCellProps()}
                       >
-                        {cell.render("Cell")}
+                       <button onClick = {()=> updateState(cell.row.original.saksnummer)}> {cell.render("Cell")} </button> 
                       </td>
-                    );
+                      );
+                    } else if(cell.column.Header === "Rediger") {
+                      return(
+                        <td
+                        style={{
+                          padding: "1rem",
+                          borderRight: "1px solid black",
+                        }}
+                        {...cell.getCellProps()}
+                      >
+                       <button onClick = {()=> editCase(cell.row.original.saksnummer)}> {cell.render("Cell")} </button> 
+                      </td>
+                      );
+                    } else {
+                      return (
+                        <td
+                          style={{
+                            padding: "1rem",
+                            borderRight: "1px solid black",
+                          }}
+                          {...cell.getCellProps()}
+                        >
+                          {cell.render("Cell")}
+                        </td>
+                      );
+                    }
+                    
                   })}
                 </tr>
               );
