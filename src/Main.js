@@ -1,7 +1,13 @@
 import { style } from "@mui/system";
 import React from "react";
 import { useRef, useState, useMemo, useEffect } from "react";
-import { useTable, useSortBy, useGlobalFilter, useFilters, usePagination } from "react-table";
+import {
+  useTable,
+  useSortBy,
+  useGlobalFilter,
+  useFilters,
+  usePagination,
+} from "react-table";
 import EditCase from "./EditCase";
 
 /** Her kommer hovedinnholdet:
@@ -40,50 +46,70 @@ const COLUMNS = [
   {
     Header: "Rediger",
     accessor: "rediger",
-  }
+  },
 ];
 
 function Main() {
-  const [data, setData] =
-    useState([]); /* Godkjenn knappen kobles opp mot denne */
+  //props inni her
+  const [data, setData] = useState(
+    []
+  ); /* Godkjenn knappen kobles opp mot denne */
   const columns = useMemo(() => COLUMNS, []);
-  const fetchData = async ()=>{
-    const res=await fetch("http://localhost:4000/bruker")
-    const json=await res.json()
-    setData(json.users)
-  }
-  useEffect(()=>{
-    fetchData()
+  const fetchData = async () => {
+    const res = await fetch("http://localhost:4000/bruker");
+    const json = await res.json();
+    setData(json.users);
+  };
+  useEffect(() => {
+    fetchData();
   }, []);
   //const tableInstance = useTable({ columns, data });
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow, page,
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow,
+    page,
     canPreviousPage,
     canNextPage,
     pageOptions,
     pageCount,
-    gotoPage, nextPage, previousPage, setPageSize, state: { pageIndex, pageSize, globalFilter }, } =
-    useTable({ columns, data, }, 
-      useFilters,
-      useGlobalFilter,
-      useSortBy,
-      usePagination );
+    gotoPage,
+    nextPage,
+    previousPage,
+    setPageSize,
+    state: { pageIndex, pageSize, globalFilter },
+  } = useTable(
+    { columns, data },
+    useFilters,
+    useGlobalFilter,
+    useSortBy,
+    usePagination
+  );
 
-    const updateState = async (message) => {
-      var svar = await fetch("http://localhost:4000/approve", {
-        method: "POST", body: JSON.stringify({message}),
-        headers: {"Content-Type": "application/json", "Accept": "application/json"}
-      });
-      const json=await svar.json()
-      const sak= data.find((s) => { return s.saksnummer === message})
-      sak.status = json.status
-      setData([...data])
-      console.log("test" + new Date(), json);
-    }
+  const updateState = async (message) => {
+    var svar = await fetch("http://localhost:4000/approve", {
+      method: "POST",
+      body: JSON.stringify({ message }),
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    });
+    const json = await svar.json();
+    const sak = data.find((s) => {
+      return s.saksnummer === message;
+    });
+    sak.status = json.status;
+    setData([...data]);
+    console.log("test" + new Date(), json);
+  };
 
-    const editCase = (snummer) => {
-      <EditCase />
-    }
+  const editCase = (snummer) => {
+    return <EditCase snummer={snummer} />;
+  };
 
   return (
     <div>
@@ -117,29 +143,43 @@ function Main() {
                 <tr {...row.getRowProps()}>
                   {row.cells.map((cell) => {
                     ///
-                    if(cell.column.Header ==="Action") {
-                      return(
+                    if (cell.column.Header === "Action") {
+                      return (
                         <td
-                        style={{
-                          padding: "1rem",
-                          borderRight: "1px solid black",
-                        }}
-                        {...cell.getCellProps()}
-                      >
-                       <button onClick = {()=> updateState(cell.row.original.saksnummer)}> {cell.render("Cell")} </button> 
-                      </td>
+                          style={{
+                            padding: "1rem",
+                            borderRight: "1px solid black",
+                          }}
+                          {...cell.getCellProps()}
+                        >
+                          <button
+                            onClick={() =>
+                              updateState(cell.row.original.saksnummer)
+                            }
+                          >
+                            {" "}
+                            {cell.render("Cell")}{" "}
+                          </button>
+                        </td>
                       );
-                    } else if(cell.column.Header === "Rediger") {
-                      return(
+                    } else if (cell.column.Header === "Rediger") {
+                      return (
                         <td
-                        style={{
-                          padding: "1rem",
-                          borderRight: "1px solid black",
-                        }}
-                        {...cell.getCellProps()}
-                      >
-                       <button onClick = {()=> editCase(cell.row.original.saksnummer)}> {cell.render("Cell")} </button> 
-                      </td>
+                          style={{
+                            padding: "1rem",
+                            borderRight: "1px solid black",
+                          }}
+                          {...cell.getCellProps()}
+                        >
+                          <button
+                            onClick={() =>
+                              editCase(cell.row.original.saksnummer)
+                            }
+                          >
+                            {" "}
+                            {cell.render("Cell")}{" "}
+                          </button>
+                        </td>
                       );
                     } else {
                       return (
@@ -154,58 +194,60 @@ function Main() {
                         </td>
                       );
                     }
-                    
                   })}
                 </tr>
               );
             })}
           </tbody>
         </table>
-        
+
         <div className="pagination" style={{ marginTop: "1rem" }}>
-    <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-      {"<<"}
-    </button>{" "}
-    <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-      {"<"}
-    </button>{" "}
-    <button onClick={() => nextPage()} disabled={!canNextPage}>
-      {">"}
-    </button>{" "}
-    <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
-      {">>"}
-    </button>{" "}
-    <span>
-      Page{" "}
-      <strong>
-        {pageIndex + 1} of {pageOptions.length}
-      </strong>{" "}
-    </span>
-    <span>
-      | Go to page:{""}
-      <input
-        type="number"
-        defaultValue={pageIndex + 1}
-        onChange={(e) => {
-          const page = e.target.value ? Number(e.target.value) - 1 : 0;
-          gotoPage(page);
-        }}
-        style={{ width: "100px" }}
-      />
-    </span>{" "}
-    <select
-      value={pageSize}
-      onChange={(e) => {
-        setPageSize(Number(e.target.value));
-      }}
-    >
-      {[10, 20, 30, 40, 50].map((pageSize) => (
-        <option key={pageSize} value={pageSize}>
-          Show {pageSize}
-        </option>
-      ))}
-    </select>
-  </div>
+          <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+            {"<<"}
+          </button>{" "}
+          <button onClick={() => previousPage()} disabled={!canPreviousPage}>
+            {"<"}
+          </button>{" "}
+          <button onClick={() => nextPage()} disabled={!canNextPage}>
+            {">"}
+          </button>{" "}
+          <button
+            onClick={() => gotoPage(pageCount - 1)}
+            disabled={!canNextPage}
+          >
+            {">>"}
+          </button>{" "}
+          <span>
+            Page{" "}
+            <strong>
+              {pageIndex + 1} of {pageOptions.length}
+            </strong>{" "}
+          </span>
+          <span>
+            | Go to page:{""}
+            <input
+              type="number"
+              defaultValue={pageIndex + 1}
+              onChange={(e) => {
+                const page = e.target.value ? Number(e.target.value) - 1 : 0;
+                gotoPage(page);
+              }}
+              style={{ width: "100px" }}
+            />
+          </span>{" "}
+          <select
+            value={pageSize}
+            onChange={(e) => {
+              setPageSize(Number(e.target.value));
+            }}
+          >
+            {[10, 20, 30, 40, 50].map((pageSize) => (
+              <option key={pageSize} value={pageSize}>
+                Show {pageSize}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/*<div style={styling_p}>
