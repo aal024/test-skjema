@@ -1,6 +1,10 @@
 import React from "react";
+import { useContext } from "react";
+import { GlobalContext } from "../helper/Context";
 
 function Header() {
+  const { globalState, setGlobalState } = useContext(GlobalContext);
+
   return (
     <header className="App-header" style={header}>
       {/** Her kommer headeren:  background: "#6464ff"
@@ -10,9 +14,7 @@ function Header() {
        *  Styling --> Egen blåfarge som indikerer header
        *   */}
       <p style={header_title}> Finansoppslag </p>
-      <a href="#" style={header_a}>
-        Brukernavn her
-      </a>
+      {globalState.glb_user === undefined ? <p style={header_p}> Ikke innlogget </p> : <p style={header_p}> Bruker: {globalState.glb_user}</p> } 
     </header>
   );
 }
@@ -40,11 +42,10 @@ const header_title = {
   marginRight: "auto",
 };
 
-const header_a = {
+const header_p = {
   float: "right",
   marginRight: "4%",
   marginTop: "2rem",
   color: "#fff",
   fontSize: "12px",
-  textDecoration: "none",
 };
